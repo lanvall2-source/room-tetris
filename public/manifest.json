@@ -1,0 +1,19 @@
+{
+  "name": "룸테트리스 (RoomTetris)",
+  "short_name": "룸테트리스",
+  "description": "1인 가구 원룸 생존형 가구배치 & 치수 가이드",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#030712",
+  "orientation": "portrait",
+  "lang": "ko-KR",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
