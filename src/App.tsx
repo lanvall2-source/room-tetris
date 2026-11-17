@@ -6,7 +6,6 @@ import {
 import { PRESET_ANALYSIS_DATABASE } from './data/presets';
 import { DECLUTTER_PRESETS } from './data/declutterPresets';
 import { analyzeRoomWithGemini, parseMarkdownToResult } from './utils/aiConsultant';
-import { getCreditStatus, consumeScanCredit, addPaidCredits, CreditStatus } from './utils/creditManager';
 import { Header } from './components/Header';
 import { RoomInputView } from './components/RoomInputView';
 import { AnalysisReportView } from './components/AnalysisReportView';
@@ -14,7 +13,6 @@ import { DeclutterInputView } from './components/DeclutterInputView';
 import { DeclutterReportView } from './components/DeclutterReportView';
 import { PwaInstallModal } from './components/PwaInstallModal';
 import { InfoModal } from './components/InfoModal';
-import { PaymentModal } from './components/PaymentModal';
 import { RefundPolicyModal } from './components/RefundPolicyModal';
 import { BedDouble, Sparkles, Package } from 'lucide-react';
 
@@ -50,23 +48,8 @@ export function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isPwaModalOpen, setIsPwaModalOpen] = useState(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-
-  // 크레딧 및 무료 쿼터 상태
-  const [creditStatus, setCreditStatus] = useState<CreditStatus>(() => {
-    const customKey = localStorage.getItem('roomtetris_gemini_key');
-    return getCreditStatus(!!customKey);
-  });
-
-  // 결제 대기 중인 작업 임시 보관
-  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
-
-  const refreshCreditStatus = () => {
-    const customKey = localStorage.getItem('roomtetris_gemini_key');
-    setCreditStatus(getCreditStatus(!!customKey));
-  };
 
   // 로컬스토리지 보존
   useEffect(() => {
@@ -95,23 +78,27 @@ export function App() {
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
-  // 토스페이먼츠 결제 승인 리디렉션 처리
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('payment') === 'success') {
-      const plan = params.get('plan');
-      const creditToAdd = plan === 'bundle' ? 3 : 1;
-      addPaidCredits(creditToAdd);
-      refreshCreditStatus();
-      alert(`🎉 토스페이먼츠 결제가 완료되었습니다! (${creditToAdd}회 분석권 충전)`);
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } else if (params.get('payment') === 'fail') {
-      alert('결제가 취소되었거나 승인 처리에 실패했습니다.');
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, []);
+  // 친구 공유 핸들러 (바이럴 유입 촉진)
+  const handleShare = async () => {
+    const shareData = {
+      title: '룸테트리스 (RoomTetris) - 1인 가구 원룸 생존형 가구배치 & 치수 가이드',
+      text: '좁은 방 가구 구매 실패 100% 방지! 1mm 단위 문 열림 간섭 체크 도면',
+      url: window.location.origin,
+    };
 
-  // 모드 1: 신규 가구배치 분석 핸들러
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch {
+        // 취소 시 무시
+      }
+    } else {
+      await navigator.clipboard.writeText(window.location.origin);
+      alert('🎉 룸테트리스 링크가 클립보드에 복사되었습니다!\n친구 또는 자취방 단톡방에 공유해보세요.');
+    }
+  };
+
+  // 모드 1: 신규 가구배치 분석 핸들러 (100% 무료 & 고속 처리)
   const handleAnalyzeNewLayout = async (data: {
     presetId: RoomPresetId;
     imageFile?: File;
@@ -119,16 +106,6 @@ export function App() {
     userNotes?: string;
     apiKey?: string;
   }) => {
-    const hasOwnKey = !!data.apiKey;
-
-    // 쿼터 차감 검사 (소진 시 결제 모달 오픈)
-    if (!consumeScanCredit(hasOwnKey)) {
-      setPendingAction(() => () => handleAnalyzeNewLayout(data));
-      setIsPaymentModalOpen(true);
-      return;
-    }
-
-    refreshCreditStatus();
     setIsLoading(true);
 
     try {
@@ -163,7 +140,7 @@ export function App() {
     }
   };
 
-  // 모드 2: 짐정리 & 재배치 분석 핸들러
+  // 모드 2: 짐정리 & 재배치 분석 핸들러 (100% 무료 & 고속 처리)
   const handleAnalyzeDeclutter = async (data: {
     problemType: DeclutterProblemType;
     imageFile?: File;
@@ -172,16 +149,6 @@ export function App() {
     userNotes?: string;
     apiKey?: string;
   }) => {
-    const hasOwnKey = !!data.apiKey;
-
-    // 쿼터 차감 검사
-    if (!consumeScanCredit(hasOwnKey)) {
-      setPendingAction(() => () => handleAnalyzeDeclutter(data));
-      setIsPaymentModalOpen(true);
-      return;
-    }
-
-    refreshCreditStatus();
     setIsLoading(true);
 
     try {
@@ -200,14 +167,6 @@ export function App() {
     }
   };
 
-  // 헤더 뱃지 텍스트 계산
-  const getCreditBadgeText = () => {
-    if (creditStatus.isUnlimitedKey) return '무제한 Key';
-    if (creditStatus.hasFreeToday) return '오늘 무료 1회';
-    if (creditStatus.totalUsable > 0) return `티켓 ${creditStatus.totalUsable}회`;
-    return '티켓 1,900원';
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans antialiased selection:bg-emerald-500 selection:text-white">
       
@@ -215,8 +174,7 @@ export function App() {
       <Header
         onOpenPwaModal={() => setIsPwaModalOpen(true)}
         onOpenInfoModal={() => setIsInfoModalOpen(true)}
-        onOpenPaymentModal={() => setIsPaymentModalOpen(true)}
-        creditText={getCreditBadgeText()}
+        onShare={handleShare}
       />
 
       {/* 메인 본문 컨테이너 */}
@@ -265,7 +223,7 @@ export function App() {
             <RoomInputView
               onAnalyze={handleAnalyzeNewLayout}
               isLoading={isLoading}
-              quotaLabel={creditStatus.hasFreeToday ? '⚡ 오늘 1회 무료 분석 가능' : `남은 티켓: ${creditStatus.totalUsable}회`}
+              quotaLabel="🎁 100% 무료 분석"
             />
           )
         )}
@@ -284,14 +242,14 @@ export function App() {
             <DeclutterInputView
               onAnalyze={handleAnalyzeDeclutter}
               isLoading={isLoading}
-              quotaLabel={creditStatus.hasFreeToday ? '⚡ 오늘 1회 무료 분석 가능' : `남은 티켓: ${creditStatus.totalUsable}회`}
+              quotaLabel="🎁 100% 무료 분석"
             />
           )
         )}
 
       </main>
 
-      {/* 하단 푸터 (토스페이먼츠 및 전자상거래법 준수 환불정책/고객지원) */}
+      {/* 하단 푸터 (전자상거래법 준수 환불정책/고객지원) */}
       <footer className="mt-auto py-6 px-4 border-t border-slate-200/80 bg-white text-center text-xs text-slate-500 space-y-2">
         <div className="flex items-center justify-center gap-3 font-semibold text-slate-600 flex-wrap">
           <button 
@@ -311,7 +269,7 @@ export function App() {
           <span>고객지원: lanvall2@gmail.com</span>
         </div>
         <p className="text-[11px] text-slate-400">
-          룸테트리스 (RoomTetris) | 디지털 콘텐츠 상품 특성상 분석 완료 후 청약철회 제한 | 미사용 티켓 결제일로부터 7일 이내 100% 환불
+          룸테트리스 (RoomTetris) | 1인 가구 소형평수 생존형 가구배치 & 치수 팩트체크 컨설턴트
         </p>
       </footer>
 
@@ -332,23 +290,6 @@ export function App() {
       <RefundPolicyModal
         isOpen={isRefundModalOpen}
         onClose={() => setIsRefundModalOpen(false)}
-      />
-
-      {/* 1,900원 단건 결제 & 바이럴 무료 충전 모달 */}
-      <PaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => {
-          setIsPaymentModalOpen(false);
-          setPendingAction(null);
-        }}
-        onSuccess={() => {
-          refreshCreditStatus();
-          if (pendingAction) {
-            const action = pendingAction;
-            setPendingAction(null);
-            action();
-          }
-        }}
       />
 
     </div>

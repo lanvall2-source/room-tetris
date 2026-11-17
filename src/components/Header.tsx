@@ -1,18 +1,16 @@
 import React from 'react';
-import { Smartphone, Ruler, Info, Ticket } from 'lucide-react';
+import { Smartphone, Ruler, Info, Share2, Sparkles } from 'lucide-react';
 
 interface HeaderProps {
   onOpenPwaModal: () => void;
   onOpenInfoModal: () => void;
-  onOpenPaymentModal: () => void;
-  creditText: string;
+  onShare: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenPwaModal,
   onOpenInfoModal,
-  onOpenPaymentModal,
-  creditText,
+  onShare,
 }) => {
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 text-slate-900 px-4 py-3 shadow-xs">
@@ -40,14 +38,14 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* 우측 버튼들 */}
         <div className="flex items-center gap-2">
-          {/* 유료/무료 크레딧 티켓 버튼 */}
+          {/* 친구 공유 버튼 (바이럴 유입 극대화) */}
           <button
-            onClick={onOpenPaymentModal}
-            aria-label="분석 티켓"
-            className="flex items-center gap-1 text-[11px] bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1.5 rounded-xl border border-emerald-200 transition-colors cursor-pointer shadow-xs"
+            onClick={onShare}
+            aria-label="공유하기"
+            className="flex items-center gap-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-xl border border-emerald-200/80 transition-colors cursor-pointer shadow-xs"
           >
-            <Ticket className="w-3.5 h-3.5 text-emerald-600" />
-            <span>{creditText}</span>
+            <Share2 className="w-3.5 h-3.5 text-emerald-600" />
+            <span>공유</span>
           </button>
 
           {/* 가이드 안내 */}
