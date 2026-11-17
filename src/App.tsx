@@ -15,6 +15,7 @@ import { DeclutterReportView } from './components/DeclutterReportView';
 import { PwaInstallModal } from './components/PwaInstallModal';
 import { InfoModal } from './components/InfoModal';
 import { PaymentModal } from './components/PaymentModal';
+import { RefundPolicyModal } from './components/RefundPolicyModal';
 import { BedDouble, Sparkles, Package } from 'lucide-react';
 
 const STORAGE_KEY_RESULT = 'roomtetris_result_v1';
@@ -50,6 +51,7 @@ export function App() {
   const [isPwaModalOpen, setIsPwaModalOpen] = useState(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   // 크레딧 및 무료 쿼터 상태
@@ -289,6 +291,30 @@ export function App() {
 
       </main>
 
+      {/* 하단 푸터 (토스페이먼츠 및 전자상거래법 준수 환불정책/고객지원) */}
+      <footer className="mt-auto py-6 px-4 border-t border-slate-200/80 bg-white text-center text-xs text-slate-500 space-y-2">
+        <div className="flex items-center justify-center gap-3 font-semibold text-slate-600 flex-wrap">
+          <button 
+            onClick={() => setIsRefundModalOpen(true)} 
+            className="hover:text-slate-900 underline cursor-pointer"
+          >
+            취소 및 환불정책
+          </button>
+          <span>•</span>
+          <button 
+            onClick={() => setIsInfoModalOpen(true)} 
+            className="hover:text-slate-900 underline cursor-pointer"
+          >
+            서비스 소개
+          </button>
+          <span>•</span>
+          <span>고객지원: lanvall2@gmail.com</span>
+        </div>
+        <p className="text-[11px] text-slate-400">
+          룸테트리스 (RoomTetris) | 디지털 콘텐츠 상품 특성상 분석 완료 후 청약철회 제한 | 미사용 티켓 결제일로부터 7일 이내 100% 환불
+        </p>
+      </footer>
+
       {/* PWA 설치 모달 */}
       <PwaInstallModal
         isOpen={isPwaModalOpen}
@@ -300,6 +326,12 @@ export function App() {
       <InfoModal
         isOpen={isInfoModalOpen}
         onClose={() => setIsInfoModalOpen(false)}
+      />
+
+      {/* 환불 정책 모달 */}
+      <RefundPolicyModal
+        isOpen={isRefundModalOpen}
+        onClose={() => setIsRefundModalOpen(false)}
       />
 
       {/* 1,900원 단건 결제 & 바이럴 무료 충전 모달 */}
