@@ -34,17 +34,17 @@ export const PwaInstallModal: React.FC<PwaInstallModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in break-keep">
-      <div className="w-full sm:max-w-md bg-slate-900 border border-slate-800 rounded-t-3xl sm:rounded-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-slate-100">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in break-keep">
+      <div className="w-full sm:max-w-md bg-white border border-slate-200 rounded-t-3xl sm:rounded-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-slate-900">
         
-        <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-emerald-400" />
-            <span className="text-sm font-bold text-white">홈 화면에 룸테트리스 앱 추가</span>
+            <Sparkles className="w-4 h-4 text-emerald-600" />
+            <span className="text-sm font-bold text-slate-900">홈 화면에 룸테트리스 앱 추가</span>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-1.5 text-slate-400 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -52,21 +52,21 @@ export const PwaInstallModal: React.FC<PwaInstallModalProps> = ({
 
         <div className="p-5 overflow-y-auto space-y-4">
           <div className="text-center py-2 space-y-1">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20 text-slate-950">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mx-auto text-emerald-700 shadow-xs">
               <Smartphone className="w-7 h-7" />
             </div>
-            <h3 className="text-base font-bold text-white pt-1">
+            <h3 className="text-base font-bold text-slate-900 pt-1">
               앱스토어 설치 없이 1초 바로가기
             </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              가구 살 때 언제든 폰에서 0.1초 만에 치수 확인이 가능합니다.
+            <p className="text-xs text-slate-500 leading-relaxed">
+              가구 쇼핑할 때 언제든 폰에서 0.1초 만에 치수 확인이 가능합니다.
             </p>
           </div>
 
           {deferredPrompt && (
             <button
               onClick={handleNativeInstall}
-              className="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-98 text-slate-950 font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/20 text-xs transition-all flex items-center justify-center gap-2"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white font-bold py-3.5 rounded-xl shadow-sm text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <Smartphone className="w-4 h-4 stroke-[2.5]" />
               <span>지금 원클릭으로 홈 화면에 추가하기</span>
@@ -74,37 +74,37 @@ export const PwaInstallModal: React.FC<PwaInstallModalProps> = ({
           )}
 
           {isIOS ? (
-            <div className="bg-slate-800/60 p-4 rounded-xl border border-slate-700/60 space-y-3">
-              <span className="text-xs font-bold text-emerald-400 block">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+              <span className="text-xs font-bold text-emerald-700 block">
                 아이폰 (Safari) 추가 방법
               </span>
-              <ol className="space-y-2 text-xs text-slate-300">
+              <ol className="space-y-2 text-xs text-slate-700">
                 <li className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-full bg-slate-700 text-white font-bold flex items-center justify-center text-[10px]">1</span>
-                  <span>화면 하단 중앙의 <strong>공유 버튼</strong> [ <Share2 className="w-3.5 h-3.5 inline text-blue-400" /> ] 터치</span>
+                  <span className="w-4 h-4 rounded-full bg-slate-200 text-slate-800 font-bold flex items-center justify-center text-[10px]">1</span>
+                  <span>화면 하단 중앙의 <strong>공유 버튼</strong> [ <Share2 className="w-3.5 h-3.5 inline text-blue-600" /> ] 터치</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-full bg-slate-700 text-white font-bold flex items-center justify-center text-[10px]">2</span>
-                  <span>스크롤 후 <strong>'홈 화면에 추가'</strong> [ <PlusSquare className="w-3.5 h-3.5 inline" /> ] 터치</span>
+                  <span className="w-4 h-4 rounded-full bg-slate-200 text-slate-800 font-bold flex items-center justify-center text-[10px]">2</span>
+                  <span>스크롤 후 <strong>'홈 화면에 추가'</strong> [ <PlusSquare className="w-3.5 h-3.5 inline text-slate-700" /> ] 터치</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-full bg-slate-700 text-white font-bold flex items-center justify-center text-[10px]">3</span>
+                  <span className="w-4 h-4 rounded-full bg-slate-200 text-slate-800 font-bold flex items-center justify-center text-[10px]">3</span>
                   <span>우측 상단 <strong>'추가'</strong> 터치하면 완료!</span>
                 </li>
               </ol>
             </div>
           ) : (
-            <div className="bg-slate-800/60 p-4 rounded-xl border border-slate-700/60 space-y-3">
-              <span className="text-xs font-bold text-emerald-400 block">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+              <span className="text-xs font-bold text-emerald-700 block">
                 안드로이드 (Chrome) 추가 방법
               </span>
-              <ol className="space-y-2 text-xs text-slate-300">
+              <ol className="space-y-2 text-xs text-slate-700">
                 <li className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-full bg-slate-700 text-white font-bold flex items-center justify-center text-[10px]">1</span>
+                  <span className="w-4 h-4 rounded-full bg-slate-200 text-slate-800 font-bold flex items-center justify-center text-[10px]">1</span>
                   <span>우측 상단 더보기 [ <strong>⋮</strong> ] 메뉴 터치</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-full bg-slate-700 text-white font-bold flex items-center justify-center text-[10px]">2</span>
+                  <span className="w-4 h-4 rounded-full bg-slate-200 text-slate-800 font-bold flex items-center justify-center text-[10px]">2</span>
                   <span><strong>'홈 화면에 추가'</strong> 또는 <strong>'앱 설치'</strong> 터치</span>
                 </li>
               </ol>
@@ -113,7 +113,7 @@ export const PwaInstallModal: React.FC<PwaInstallModalProps> = ({
 
           <button
             onClick={onClose}
-            className="w-full py-2.5 text-xs text-slate-400 hover:text-white transition-colors"
+            className="w-full py-2.5 text-xs text-slate-400 hover:text-slate-700 transition-colors"
           >
             닫기
           </button>
