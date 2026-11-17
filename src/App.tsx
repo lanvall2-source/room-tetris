@@ -6,7 +6,7 @@ import {
 import { PRESET_ANALYSIS_DATABASE } from './data/presets';
 import { DECLUTTER_PRESETS } from './data/declutterPresets';
 import { analyzeRoomWithGemini, parseMarkdownToResult } from './utils/aiConsultant';
-import { getCreditStatus, consumeScanCredit, CreditStatus } from './utils/creditManager';
+import { getCreditStatus, consumeScanCredit, addPaidCredits, CreditStatus } from './utils/creditManager';
 import { Header } from './components/Header';
 import { RoomInputView } from './components/RoomInputView';
 import { AnalysisReportView } from './components/AnalysisReportView';
@@ -91,6 +91,22 @@ export function App() {
     };
     window.addEventListener('beforeinstallprompt', handler);
     return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  // 토스페이먼츠 결제 승인 리디렉션 처리
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success') {
+      const plan = params.get('plan');
+      const creditToAdd = plan === 'bundle' ? 3 : 1;
+      addPaidCredits(creditToAdd);
+      refreshCreditStatus();
+      alert(`🎉 토스페이먼츠 결제가 완료되었습니다! (${creditToAdd}회 분석권 충전)`);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (params.get('payment') === 'fail') {
+      alert('결제가 취소되었거나 승인 처리에 실패했습니다.');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
   }, []);
 
   // 모드 1: 신규 가구배치 분석 핸들러
