@@ -6,6 +6,7 @@ import {
 import { PRESET_ANALYSIS_DATABASE } from './data/presets';
 import { DECLUTTER_PRESETS } from './data/declutterPresets';
 import { analyzeRoomWithGemini, parseMarkdownToResult } from './utils/aiConsultant';
+import { getCreditStatus, consumeScanCredit, CreditStatus } from './utils/creditManager';
 import { Header } from './components/Header';
 import { RoomInputView } from './components/RoomInputView';
 import { AnalysisReportView } from './components/AnalysisReportView';
@@ -13,6 +14,7 @@ import { DeclutterInputView } from './components/DeclutterInputView';
 import { DeclutterReportView } from './components/DeclutterReportView';
 import { PwaInstallModal } from './components/PwaInstallModal';
 import { InfoModal } from './components/InfoModal';
+import { PaymentModal } from './components/PaymentModal';
 import { BedDouble, Sparkles, Package } from 'lucide-react';
 
 const STORAGE_KEY_RESULT = 'roomtetris_result_v1';
@@ -47,7 +49,22 @@ export function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isPwaModalOpen, setIsPwaModalOpen] = useState(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  // 크레딧 및 무료 쿼터 상태
+  const [creditStatus, setCreditStatus] = useState<CreditStatus>(() => {
+    const customKey = localStorage.getItem('roomtetris_gemini_key');
+    return getCreditStatus(!!customKey);
+  });
+
+  // 결제 대기 중인 작업 임시 보관
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+
+  const refreshCreditStatus = () => {
+    const customKey = localStorage.getItem('roomtetris_gemini_key');
+    setCreditStatus(getCreditStatus(!!customKey));
+  };
 
   // 로컬스토리지 보존
   useEffect(() => {
@@ -84,6 +101,16 @@ export function App() {
     userNotes?: string;
     apiKey?: string;
   }) => {
+    const hasOwnKey = !!data.apiKey;
+
+    // 쿼터 차감 검사 (소진 시 결제 모달 오픈)
+    if (!consumeScanCredit(hasOwnKey)) {
+      setPendingAction(() => () => handleAnalyzeNewLayout(data));
+      setIsPaymentModalOpen(true);
+      return;
+    }
+
+    refreshCreditStatus();
     setIsLoading(true);
 
     try {
@@ -127,6 +154,16 @@ export function App() {
     userNotes?: string;
     apiKey?: string;
   }) => {
+    const hasOwnKey = !!data.apiKey;
+
+    // 쿼터 차감 검사
+    if (!consumeScanCredit(hasOwnKey)) {
+      setPendingAction(() => () => handleAnalyzeDeclutter(data));
+      setIsPaymentModalOpen(true);
+      return;
+    }
+
+    refreshCreditStatus();
     setIsLoading(true);
 
     try {
@@ -145,6 +182,14 @@ export function App() {
     }
   };
 
+  // 헤더 뱃지 텍스트 계산
+  const getCreditBadgeText = () => {
+    if (creditStatus.isUnlimitedKey) return '무제한 Key';
+    if (creditStatus.hasFreeToday) return '오늘 무료 1회';
+    if (creditStatus.totalUsable > 0) return `티켓 ${creditStatus.totalUsable}회`;
+    return '티켓 1,900원';
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans antialiased selection:bg-emerald-500 selection:text-white">
       
@@ -152,6 +197,8 @@ export function App() {
       <Header
         onOpenPwaModal={() => setIsPwaModalOpen(true)}
         onOpenInfoModal={() => setIsInfoModalOpen(true)}
+        onOpenPaymentModal={() => setIsPaymentModalOpen(true)}
+        creditText={getCreditBadgeText()}
       />
 
       {/* 메인 본문 컨테이너 */}
@@ -200,6 +247,7 @@ export function App() {
             <RoomInputView
               onAnalyze={handleAnalyzeNewLayout}
               isLoading={isLoading}
+              quotaLabel={creditStatus.hasFreeToday ? '⚡ 오늘 1회 무료 분석 가능' : `남은 티켓: ${creditStatus.totalUsable}회`}
             />
           )
         )}
@@ -218,6 +266,7 @@ export function App() {
             <DeclutterInputView
               onAnalyze={handleAnalyzeDeclutter}
               isLoading={isLoading}
+              quotaLabel={creditStatus.hasFreeToday ? '⚡ 오늘 1회 무료 분석 가능' : `남은 티켓: ${creditStatus.totalUsable}회`}
             />
           )
         )}
@@ -231,14 +280,29 @@ export function App() {
         deferredPrompt={deferredPrompt}
       />
 
-      {/* 생존 원칙 안내 모달 */}
+      {/* 가이드 안내 모달 */}
       <InfoModal
         isOpen={isInfoModalOpen}
         onClose={() => setIsInfoModalOpen(false)}
       />
 
+      {/* 1,900원 단건 결제 & 바이럴 무료 충전 모달 */}
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => {
+          setIsPaymentModalOpen(false);
+          setPendingAction(null);
+        }}
+        onSuccess={() => {
+          refreshCreditStatus();
+          if (pendingAction) {
+            const action = pendingAction;
+            setPendingAction(null);
+            action();
+          }
+        }}
+      />
+
     </div>
   );
 }
-
-export default App;

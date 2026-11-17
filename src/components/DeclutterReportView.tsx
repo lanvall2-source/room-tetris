@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { DeclutterAnalysisResult } from '../types';
 import { 
   RotateCcw, Copy, Share2, Check, ArrowRight, AlertTriangle, 
-  Trash2, RefreshCw, ShoppingCart, ExternalLink, Sparkles, CheckCircle2 
+  Trash2, RefreshCw, ShoppingCart, ExternalLink, Sparkles, CheckCircle2, Info 
 } from 'lucide-react';
+import { getCoupangSearchUrl, AFFILIATE_CONFIG } from '../utils/affiliate';
 
 interface DeclutterReportViewProps {
   result: DeclutterAnalysisResult;
@@ -245,7 +246,7 @@ ${result.step3_budgetItems.map(b => `* **${b.name} (${b.priceRange}):** ${b.spec
               </div>
 
               <a
-                href={`https://www.coupang.com/np/search?component=&q=${encodeURIComponent(item.searchKeyword)}`}
+                href={getCoupangSearchUrl(item.searchKeyword)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="shrink-0 flex items-center gap-1 bg-white hover:bg-slate-50 active:scale-95 text-slate-800 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-slate-200 shadow-xs transition-all ml-1 whitespace-nowrap"
@@ -255,6 +256,12 @@ ${result.step3_budgetItems.map(b => `* **${b.name} (${b.priceRange}):** ${b.spec
               </a>
             </div>
           ))}
+        </div>
+
+        {/* 제휴 마케팅 공정위 표준 문구 배너 */}
+        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/90 text-[11px] text-slate-500 flex items-center gap-2">
+          <Info className="w-4 h-4 text-purple-600 shrink-0" />
+          <span>{AFFILIATE_CONFIG.disclaimerText}</span>
         </div>
       </div>
 

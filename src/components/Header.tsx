@@ -1,14 +1,18 @@
 import React from 'react';
-import { Smartphone, Ruler, Info } from 'lucide-react';
+import { Smartphone, Ruler, Info, Ticket } from 'lucide-react';
 
 interface HeaderProps {
   onOpenPwaModal: () => void;
   onOpenInfoModal: () => void;
+  onOpenPaymentModal: () => void;
+  creditText: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenPwaModal,
-  onOpenInfoModal
+  onOpenInfoModal,
+  onOpenPaymentModal,
+  creditText,
 }) => {
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 text-slate-900 px-4 py-3 shadow-xs">
@@ -36,11 +40,21 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* 우측 버튼들 */}
         <div className="flex items-center gap-2">
+          {/* 유료/무료 크레딧 티켓 버튼 */}
+          <button
+            onClick={onOpenPaymentModal}
+            aria-label="분석 티켓"
+            className="flex items-center gap-1 text-[11px] bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1.5 rounded-xl border border-emerald-200 transition-colors cursor-pointer shadow-xs"
+          >
+            <Ticket className="w-3.5 h-3.5 text-emerald-600" />
+            <span>{creditText}</span>
+          </button>
+
           {/* 가이드 안내 */}
           <button
             onClick={onOpenInfoModal}
             aria-label="가이드 안내"
-            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors"
+            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
           >
             <Info className="w-5 h-5" />
           </button>
@@ -49,7 +63,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onOpenPwaModal}
             aria-label="앱 설치"
-            className="flex items-center gap-1 text-xs bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold px-3 py-1.5 rounded-xl shadow-sm transition-all"
+            className="flex items-center gap-1 text-xs bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold px-3 py-1.5 rounded-xl shadow-sm transition-all cursor-pointer"
           >
             <Smartphone className="w-3.5 h-3.5" />
             <span>앱 설치</span>

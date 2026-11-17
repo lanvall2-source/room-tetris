@@ -3,8 +3,9 @@ import { RoomAnalysisResult, LayoutOption } from '../types';
 import { FloorPlanView } from './FloorPlanView';
 import { 
   Ruler, BedDouble, Share2, Copy, RotateCcw, ExternalLink, 
-  Check, ShieldAlert 
+  Check, ShieldAlert, Info 
 } from 'lucide-react';
+import { getCoupangSearchUrl, AFFILIATE_CONFIG } from '../utils/affiliate';
 
 interface AnalysisReportViewProps {
   result: RoomAnalysisResult;
@@ -217,7 +218,7 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
                 </div>
 
                 <a
-                  href={`https://www.coupang.com/np/search?component=&q=${encodeURIComponent(f.searchKeyword || f.name)}`}
+                  href={getCoupangSearchUrl(f.searchKeyword || f.name)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="shrink-0 flex items-center gap-1 bg-white hover:bg-slate-50 active:scale-95 text-slate-700 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-xs transition-all ml-2"
@@ -227,6 +228,12 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
                 </a>
               </div>
             ))}
+          </div>
+
+          {/* 제휴 마케팅 공정위 표준 문구 배너 */}
+          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/90 text-[11px] text-slate-500 flex items-center gap-2 mt-2">
+            <Info className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>{AFFILIATE_CONFIG.disclaimerText}</span>
           </div>
         </div>
 
