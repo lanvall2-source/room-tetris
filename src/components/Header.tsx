@@ -1,50 +1,48 @@
 import React from 'react';
-import { Smartphone, Ruler, Info, Share2, Sparkles } from 'lucide-react';
+import { Ruler, Info, Share2, Sparkles } from 'lucide-react';
 
 interface HeaderProps {
-  onOpenPwaModal: () => void;
   onOpenInfoModal: () => void;
   onShare: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  onOpenPwaModal,
   onOpenInfoModal,
   onShare,
 }) => {
   return (
-    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 text-slate-900 px-4 py-3 shadow-xs">
+    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 text-slate-900 px-4 py-2.5 shadow-xs">
       <div className="max-w-xl mx-auto flex items-center justify-between">
         
         {/* 로고 & 타이틀 */}
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-600/20 text-white">
-            <Ruler className="w-5 h-5 stroke-[2.5]" />
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-teal-500 flex items-center justify-center shadow-md shadow-blue-600/20 text-white">
+            <Ruler className="w-4 h-4 stroke-[2.5]" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <h1 className="text-base sm:text-lg font-extrabold tracking-tight text-slate-900 flex items-center gap-1">
+              <h1 className="text-sm sm:text-base font-black tracking-tight text-slate-900 flex items-center gap-1">
                 룸테트리스
-                <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  RoomTetris
+                <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded-md bg-blue-50 text-blue-700 border border-blue-200/80">
+                  방꾸미기
                 </span>
               </h1>
             </div>
-            <p className="text-[11px] text-slate-500 font-medium">
-              1인 가구 생존형 가구배치 & mm 수치 가이드
+            <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium">
+              자취방 가구배치 & 인테리어 시뮬레이터
             </p>
           </div>
         </div>
 
-        {/* 우측 버튼들 */}
-        <div className="flex items-center gap-2">
-          {/* 친구 공유 버튼 (바이럴 유입 극대화) */}
+        {/* 우측 버튼들 (토스 환경 최적화: 깔끔한 공유 & 가이드 안내) */}
+        <div className="flex items-center gap-1.5">
+          {/* 친구 공유 버튼 */}
           <button
             onClick={onShare}
-            aria-label="공유하기"
-            className="flex items-center gap-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-xl border border-emerald-200/80 transition-colors cursor-pointer shadow-xs"
+            aria-label="내 방 인테리어 공유하기"
+            className="flex items-center gap-1 text-xs bg-blue-50 hover:bg-blue-100 active:scale-95 text-blue-700 font-bold px-2.5 py-1.5 rounded-xl border border-blue-200/80 transition-all cursor-pointer shadow-2xs"
           >
-            <Share2 className="w-3.5 h-3.5 text-emerald-600" />
+            <Share2 className="w-3.5 h-3.5 text-blue-600" />
             <span>공유</span>
           </button>
 
@@ -52,19 +50,10 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onOpenInfoModal}
             aria-label="가이드 안내"
-            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+            className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+            title="이용 가이드"
           >
-            <Info className="w-5 h-5" />
-          </button>
-
-          {/* PWA 앱 설치 버튼 */}
-          <button
-            onClick={onOpenPwaModal}
-            aria-label="앱 설치"
-            className="flex items-center gap-1 text-xs bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold px-3 py-1.5 rounded-xl shadow-sm transition-all cursor-pointer"
-          >
-            <Smartphone className="w-3.5 h-3.5" />
-            <span>앱 설치</span>
+            <Info className="w-4 h-4" />
           </button>
         </div>
 

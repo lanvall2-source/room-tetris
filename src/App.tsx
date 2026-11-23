@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { 
   RoomAnalysisResult, RoomPresetId, AppMode, 
-  DeclutterAnalysisResult, DeclutterProblemType 
+  DeclutterAnalysisResult, DeclutterProblemType,
+  DecorThemeId
 } from './types';
 import { PRESET_ANALYSIS_DATABASE } from './data/presets';
 import { DECLUTTER_PRESETS } from './data/declutterPresets';
-import { analyzeRoomWithGemini, parseMarkdownToResult } from './utils/aiConsultant';
 import { Header } from './components/Header';
 import { RoomInputView } from './components/RoomInputView';
 import { AnalysisReportView } from './components/AnalysisReportView';
 import { DeclutterInputView } from './components/DeclutterInputView';
 import { DeclutterReportView } from './components/DeclutterReportView';
-import { PwaInstallModal } from './components/PwaInstallModal';
 import { InfoModal } from './components/InfoModal';
-import { RefundPolicyModal } from './components/RefundPolicyModal';
 import { BedDouble, Sparkles, Package } from 'lucide-react';
 
 const STORAGE_KEY_RESULT = 'roomtetris_result_v1';
@@ -24,6 +22,8 @@ export function App() {
   const [appMode, setAppMode] = useState<AppMode>(() => {
     return (localStorage.getItem(STORAGE_KEY_MODE) as AppMode) || 'new_layout';
   });
+
+  const [activeTheme, setActiveTheme] = useState<DecorThemeId>('wood');
 
   // 1. 신규 가구배치 결과 상태
   const [currentResult, setCurrentResult] = useState<RoomAnalysisResult | null>(() => {
@@ -46,10 +46,7 @@ export function App() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isPwaModalOpen, setIsPwaModalOpen] = useState(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
-  const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   // 로컬스토리지 보존
   useEffect(() => {
@@ -68,21 +65,11 @@ export function App() {
     }
   }, [declutterResult]);
 
-  // PWA 설치 감지
-  useEffect(() => {
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
-
-  // 친구 공유 핸들러 (바이럴 유입 촉진)
+  // 친구 공유 핸들러 (토스 공유)
   const handleShare = async () => {
     const shareData = {
-      title: '룸테트리스 (RoomTetris) - 1인 가구 원룸 생존형 가구배치 & 치수 가이드',
-      text: '좁은 방 가구 구매 실패 100% 방지! 1mm 단위 문 열림 간섭 체크 도면',
+      title: '룸테트리스 (RoomTetris) - 자취방 가구배치 & 방꾸미기 시뮬레이터',
+      text: '좁은 방 가구 구매 실패 100% 방지! 1초 만에 맞춰보는 내 방 2D 인테리어 도면',
       url: window.location.origin,
     };
 
@@ -94,39 +81,30 @@ export function App() {
       }
     } else {
       await navigator.clipboard.writeText(window.location.origin);
-      alert('🎉 룸테트리스 링크가 클립보드에 복사되었습니다!\n친구 또는 자취방 단톡방에 공유해보세요.');
+      alert('🎉 룸테트리스 링크가 복사되었습니다!\n친구에게 공유해보세요.');
     }
   };
 
-  // 모드 1: 신규 가구배치 분석 핸들러 (100% 무료 & 고속 처리)
+  // 모드 1: 신규 가구배치 분석 핸들러 (100% 무료 & 초고속)
   const handleAnalyzeNewLayout = async (data: {
     presetId: RoomPresetId;
+    theme?: DecorThemeId;
     imageFile?: File;
     imagePreviewUrl?: string;
     userNotes?: string;
-    apiKey?: string;
   }) => {
     setIsLoading(true);
+    if (data.theme) setActiveTheme(data.theme);
 
     try {
-      if (data.imagePreviewUrl && data.apiKey) {
-        const markdown = await analyzeRoomWithGemini(
-          data.imagePreviewUrl,
-          data.apiKey,
-          data.userNotes
-        );
-        const parsed = parseMarkdownToResult(markdown, data.presetId, data.imagePreviewUrl);
-        setCurrentResult(parsed);
-      } else {
-        await new Promise((r) => setTimeout(r, 850));
-        const base = PRESET_ANALYSIS_DATABASE[data.presetId] || PRESET_ANALYSIS_DATABASE.studio_5py;
-        setCurrentResult({
-          ...base,
-          id: `res-${Date.now()}`,
-          createdAt: new Date().toISOString(),
-          imageUrl: data.imagePreviewUrl,
-        });
-      }
+      await new Promise((r) => setTimeout(r, 650));
+      const base = PRESET_ANALYSIS_DATABASE[data.presetId] || PRESET_ANALYSIS_DATABASE.studio_5py;
+      setCurrentResult({
+        ...base,
+        id: `res-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        imageUrl: data.imagePreviewUrl,
+      });
     } catch (err: any) {
       const fallback = PRESET_ANALYSIS_DATABASE[data.presetId] || PRESET_ANALYSIS_DATABASE.studio_5py;
       setCurrentResult({
@@ -140,19 +118,18 @@ export function App() {
     }
   };
 
-  // 모드 2: 짐정리 & 재배치 분석 핸들러 (100% 무료 & 고속 처리)
+  // 모드 2: 짐정리 & 재배치 분석 핸들러
   const handleAnalyzeDeclutter = async (data: {
     problemType: DeclutterProblemType;
     imageFile?: File;
     imagePreviewUrl?: string;
     existingFurniture: string[];
     userNotes?: string;
-    apiKey?: string;
   }) => {
     setIsLoading(true);
 
     try {
-      await new Promise((r) => setTimeout(r, 900));
+      await new Promise((r) => setTimeout(r, 650));
       const scenario = DECLUTTER_PRESETS.find(p => p.id === data.problemType) || DECLUTTER_PRESETS[0];
 
       setDeclutterResult({
@@ -168,11 +145,10 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans antialiased selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans antialiased selection:bg-blue-600 selection:text-white">
       
-      {/* 상단 고정 헤더 */}
+      {/* 상단 고정 헤더 (토스 최적화: 앱설치 버튼 제거 완료) */}
       <Header
-        onOpenPwaModal={() => setIsPwaModalOpen(true)}
         onOpenInfoModal={() => setIsInfoModalOpen(true)}
         onShare={handleShare}
       />
@@ -182,38 +158,39 @@ export function App() {
         
         {/* 모드 선택 세그먼트 (결과 화면이 아닐 때 상단 노출) */}
         {!currentResult && !declutterResult && (
-          <div className="grid grid-cols-2 p-1 bg-slate-200/80 rounded-2xl mb-4 border border-slate-300/60 shadow-xs">
+          <div className="grid grid-cols-2 p-1 bg-slate-200/80 rounded-2xl mb-3.5 border border-slate-300/60 shadow-xs">
             <button
               onClick={() => setAppMode('new_layout')}
-              className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`py-2 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 appMode === 'new_layout'
-                  ? 'bg-white text-emerald-800 shadow-sm border border-slate-200'
+                  ? 'bg-white text-blue-900 shadow-sm border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <BedDouble className="w-4 h-4 text-emerald-600" />
-              <span>빈 방 / 이사 가구배치</span>
+              <BedDouble className="w-4 h-4 text-blue-600" />
+              <span>방꾸미기 & 가구배치</span>
             </button>
 
             <button
               onClick={() => setAppMode('declutter')}
-              className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`py-2 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 appMode === 'declutter'
-                  ? 'bg-white text-amber-800 shadow-sm border border-slate-200'
+                  ? 'bg-white text-amber-900 shadow-sm border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Package className="w-4 h-4 text-amber-600" />
-              <span>살고 있는 방 / 짐정리·재배치</span>
+              <span>짐정리 & 공간 비우기</span>
             </button>
           </div>
         )}
 
-        {/* 모드 1: 신규 가구배치 화면 */}
+        {/* 모드 1: 신규 가구배치 & 방꾸미기 화면 */}
         {appMode === 'new_layout' && (
           currentResult ? (
             <AnalysisReportView
               result={currentResult}
+              initialTheme={activeTheme}
               onReset={() => {
                 setCurrentResult(null);
                 localStorage.removeItem(STORAGE_KEY_RESULT);
@@ -223,7 +200,6 @@ export function App() {
             <RoomInputView
               onAnalyze={handleAnalyzeNewLayout}
               isLoading={isLoading}
-              quotaLabel="🎁 100% 무료 분석"
             />
           )
         )}
@@ -242,23 +218,16 @@ export function App() {
             <DeclutterInputView
               onAnalyze={handleAnalyzeDeclutter}
               isLoading={isLoading}
-              quotaLabel="🎁 100% 무료 분석"
+              quotaLabel="🎁 100% 무료"
             />
           )
         )}
 
       </main>
 
-      {/* 하단 푸터 (전자상거래법 준수 환불정책/고객지원) */}
-      <footer className="mt-auto py-6 px-4 border-t border-slate-200/80 bg-white text-center text-xs text-slate-500 space-y-2">
-        <div className="flex items-center justify-center gap-3 font-semibold text-slate-600 flex-wrap">
-          <button 
-            onClick={() => setIsRefundModalOpen(true)} 
-            className="hover:text-slate-900 underline cursor-pointer"
-          >
-            취소 및 환불정책
-          </button>
-          <span>•</span>
+      {/* 하단 미니멀 푸터 (토스 환경 친화적) */}
+      <footer className="mt-auto py-5 px-4 border-t border-slate-200/80 bg-white text-center text-xs text-slate-500 space-y-1.5">
+        <div className="flex items-center justify-center gap-3 font-semibold text-slate-600">
           <button 
             onClick={() => setIsInfoModalOpen(true)} 
             className="hover:text-slate-900 underline cursor-pointer"
@@ -266,30 +235,17 @@ export function App() {
             서비스 소개
           </button>
           <span>•</span>
-          <span>고객지원: lanvall2@gmail.com</span>
+          <span>문의: lanvall2@gmail.com</span>
         </div>
-        <p className="text-[11px] text-slate-400">
-          룸테트리스 (RoomTetris) | 1인 가구 소형평수 생존형 가구배치 & 치수 팩트체크 컨설턴트
+        <p className="text-[10px] sm:text-[11px] text-slate-400">
+          룸테트리스 (RoomTetris) | 토스 사용자를 위한 100% 무료 자취방 가구배치 & 방꾸미기
         </p>
       </footer>
-
-      {/* PWA 설치 모달 */}
-      <PwaInstallModal
-        isOpen={isPwaModalOpen}
-        onClose={() => setIsPwaModalOpen(false)}
-        deferredPrompt={deferredPrompt}
-      />
 
       {/* 가이드 안내 모달 */}
       <InfoModal
         isOpen={isInfoModalOpen}
         onClose={() => setIsInfoModalOpen(false)}
-      />
-
-      {/* 환불 정책 모달 */}
-      <RefundPolicyModal
-        isOpen={isRefundModalOpen}
-        onClose={() => setIsRefundModalOpen(false)}
       />
 
     </div>

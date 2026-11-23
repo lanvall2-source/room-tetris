@@ -4,6 +4,15 @@ export type RoomPresetId = 'studio_5py' | 'officetel_7py' | 'studio_9py' | 'vill
 
 export type WallPosition = 'top' | 'right' | 'bottom' | 'left';
 
+export type DecorThemeId = 'wood' | 'modern' | 'cozy';
+
+export interface DecorAccessoryState {
+  rug: boolean;
+  mirror: boolean;
+  plant: boolean;
+  lamp: boolean;
+}
+
 export interface FurnitureItem {
   id: string;
   name: string;

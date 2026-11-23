@@ -1,0 +1,57 @@
+name: Build Toss AIT Bundle
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Web Application
+        run: npm run build
+
+      - name: Build Official Toss AIT Bundle
+        run: |
+          npm install --no-save @apps-in-toss/cli @apps-in-toss/ait-format @apps-in-toss/ait-format-proto uuidv7
+          if npx ait build; then
+            echo "Successfully built roomtetris.ait with official ait build!"
+          else
+            echo "Fallback to pack-toss-ait.mjs..."
+            node scripts/pack-toss-ait.mjs
+          fi
+          ls -lh roomtetris.ait
+
+      - name: Upload AIT Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: roomtetris-ait
+          path: roomtetris.ait
+          if-no-files-found: error
+
+      - name: Publish Toss Bundle Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.0-toss
+          name: "룸테트리스 토스 미니앱 번들 (roomtetris.ait)"
+          body: "앱인토스 공식 AITBUNDL 규격 및 deploymentId가 포함된 룸테트리스 번들 파일입니다."
+          files: roomtetris.ait
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
