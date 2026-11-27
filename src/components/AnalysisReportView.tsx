@@ -3,7 +3,8 @@ import { RoomAnalysisResult, LayoutOption, DecorThemeId, DecorAccessoryState } f
 import { FloorPlanView } from './FloorPlanView';
 import { 
   Ruler, BedDouble, Share2, Copy, RotateCcw, 
-  Check, ShieldAlert, Sparkles, Palette 
+  Check, ShieldAlert, Sparkles, Palette,
+  Trees, Sliders, Heart, Monitor, DoorOpen
 } from 'lucide-react';
 import { getCoupangSearchUrl } from '../utils/affiliate';
 
@@ -50,7 +51,7 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
       navigator.clipboard.writeText(shareText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      alert('🎉 내 방 인테리어 결과가 복사되었습니다!\n친구에게 공유해보세요.');
+      alert('내 방 인테리어 결과가 복사되었습니다.\n친구에게 공유해보세요.');
     }
   };
 
@@ -124,23 +125,27 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
         <div className="flex items-center gap-1">
           {(
             [
-              { id: 'wood', label: '🌿 우드' },
-              { id: 'modern', label: '🏙️ 모던' },
-              { id: 'cozy', label: '🧸 코지' },
+              { id: 'wood', label: '우드', icon: Trees },
+              { id: 'modern', label: '모던', icon: Sliders },
+              { id: 'cozy', label: '코지', icon: Heart },
             ] as const
-          ).map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setCurrentTheme(t.id)}
-              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
-                currentTheme === t.id
-                  ? 'bg-blue-600 text-white shadow-2xs'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
+          ).map((t) => {
+            const IconComp = t.icon;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setCurrentTheme(t.id)}
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                  currentTheme === t.id
+                    ? 'bg-blue-600 text-white shadow-2xs'
+                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                <IconComp className="w-3 h-3" />
+                <span>{t.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -171,7 +176,10 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
         </div>
 
         <div className="p-3 bg-blue-50/50 rounded-xl border border-blue-100 text-xs text-blue-900 leading-relaxed">
-          <strong className="block mb-0.5 text-blue-950 font-black">✨ 동선 및 생활 장점:</strong>
+          <strong className="block mb-0.5 text-blue-950 font-black flex items-center gap-1">
+            <Sparkles className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+            <span>동선 및 생활 장점:</span>
+          </strong>
           {activeOption.advantages}
         </div>
       </div>
@@ -187,21 +195,30 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
-            <span className="font-extrabold text-slate-800 block mb-1">🛏️ 침대 추천 규격</span>
+            <span className="font-extrabold text-slate-800 flex items-center gap-1.5 mb-1">
+              <BedDouble className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>침대 추천 규격</span>
+            </span>
             <p className="text-slate-600 text-[11px] leading-relaxed">
               {result.failureGuide.bed}
             </p>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
-            <span className="font-extrabold text-slate-800 block mb-1">💻 책상/테이블 한계</span>
+            <span className="font-extrabold text-slate-800 flex items-center gap-1.5 mb-1">
+              <Monitor className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+              <span>책상/테이블 한계</span>
+            </span>
             <p className="text-slate-600 text-[11px] leading-relaxed">
               {result.failureGuide.desk}
             </p>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
-            <span className="font-extrabold text-slate-800 block mb-1">🚪 문/통로 간섭 주의</span>
+            <span className="font-extrabold text-slate-800 flex items-center gap-1.5 mb-1">
+              <DoorOpen className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+              <span>문/통로 간섭 주의</span>
+            </span>
             <p className="text-slate-600 text-[11px] leading-relaxed">
               {result.failureGuide.clearance}
             </p>

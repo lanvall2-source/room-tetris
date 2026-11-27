@@ -1,6 +1,6 @@
 import React from 'react';
 import { LayoutOption, DecorThemeId, DecorAccessoryState } from '../types';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Disc, Flower2, Lightbulb } from 'lucide-react';
 
 interface FloorPlanViewProps {
   roomWidthMm: number;
@@ -154,7 +154,7 @@ export const FloorPlanView: React.FC<FloorPlanViewProps> = ({
               fontWeight="bold"
               textAnchor="middle"
             >
-              🧶 러그
+              러그
             </text>
           </g>
         )}
@@ -278,7 +278,7 @@ export const FloorPlanView: React.FC<FloorPlanViewProps> = ({
                 x={itemX + itemW / 2}
                 y={itemY + itemH / 2 - 2}
                 fill={styles.text}
-                fontSize="10"
+                fontSize={itemW < 50 ? "8.5" : "10"}
                 fontWeight="900"
                 textAnchor="middle"
                 dominantBaseline="central"
@@ -287,9 +287,9 @@ export const FloorPlanView: React.FC<FloorPlanViewProps> = ({
               </text>
               <text
                 x={itemX + itemW / 2}
-                y={itemY + itemH / 2 + 10}
+                y={itemY + itemH / 2 + (itemW < 50 ? 8 : 10)}
                 fill={styles.sub}
-                fontSize="8"
+                fontSize={itemW < 50 ? "7" : "8"}
                 fontWeight="bold"
                 textAnchor="middle"
                 dominantBaseline="central"
@@ -306,22 +306,32 @@ export const FloorPlanView: React.FC<FloorPlanViewProps> = ({
             <rect
               x={roomX + roomW - 14}
               y={roomY + roomH * 0.65}
-              width={10}
-              height={32}
+              width={11}
+              height={34}
               fill="#E0F2FE"
               stroke="#0284C7"
               strokeWidth="1.2"
               rx="2"
             />
             <text
-              x={roomX + roomW - 9}
-              y={roomY + roomH * 0.65 + 17}
+              x={roomX + roomW - 8.5}
+              y={roomY + roomH * 0.65 + 14}
               fill="#0369A1"
-              fontSize="7"
+              fontSize="6"
               fontWeight="bold"
               textAnchor="middle"
             >
-              🪞
+              거
+            </text>
+            <text
+              x={roomX + roomW - 8.5}
+              y={roomY + roomH * 0.65 + 23}
+              fill="#0369A1"
+              fontSize="6"
+              fontWeight="bold"
+              textAnchor="middle"
+            >
+              울
             </text>
           </g>
         )}
@@ -340,10 +350,12 @@ export const FloorPlanView: React.FC<FloorPlanViewProps> = ({
             <text
               x={roomX + roomW - 14}
               y={roomY + 19}
-              fontSize="9"
+              fill="#15803D"
+              fontSize="7"
+              fontWeight="bold"
               textAnchor="middle"
             >
-              🪴
+              식물
             </text>
           </g>
         )}
@@ -365,14 +377,12 @@ export const FloorPlanView: React.FC<FloorPlanViewProps> = ({
               stroke="#CA8A04"
               strokeWidth="1.2"
             />
-            <text
-              x={roomX + 16}
-              y={roomY + 19}
-              fontSize="8"
-              textAnchor="middle"
-            >
-              💡
-            </text>
+            <circle
+              cx={roomX + 16}
+              cy={roomY + 16}
+              r={2.5}
+              fill="#CA8A04"
+            />
           </g>
         )}
       </svg>
@@ -388,38 +398,42 @@ export const FloorPlanView: React.FC<FloorPlanViewProps> = ({
             <button
               type="button"
               onClick={() => onToggleAccessory('rug')}
-              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
                 accessories.rug ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-slate-100 text-slate-400'
               }`}
             >
-              🧶 러그
+              <Disc className="w-3 h-3" />
+              <span>러그</span>
             </button>
             <button
               type="button"
               onClick={() => onToggleAccessory('mirror')}
-              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
                 accessories.mirror ? 'bg-sky-100 text-sky-800 border border-sky-300' : 'bg-slate-100 text-slate-400'
               }`}
             >
-              🪞 전신거울
+              <Sparkles className="w-3 h-3" />
+              <span>전신거울</span>
             </button>
             <button
               type="button"
               onClick={() => onToggleAccessory('plant')}
-              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
                 accessories.plant ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-100 text-slate-400'
               }`}
             >
-              🪴 반려식물
+              <Flower2 className="w-3 h-3" />
+              <span>반려식물</span>
             </button>
             <button
               type="button"
               onClick={() => onToggleAccessory('lamp')}
-              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
                 accessories.lamp ? 'bg-yellow-100 text-yellow-800 border border-yellow-300' : 'bg-slate-100 text-slate-400'
               }`}
             >
-              💡 무드등
+              <Lightbulb className="w-3 h-3" />
+              <span>무드등</span>
             </button>
           </div>
         </div>

@@ -11,7 +11,8 @@ import { RoomInputView } from './components/RoomInputView';
 import { AnalysisReportView } from './components/AnalysisReportView';
 import { DeclutterInputView } from './components/DeclutterInputView';
 import { DeclutterReportView } from './components/DeclutterReportView';
-import { InfoModal } from './components/InfoModal';
+import { GuideAndFaqModal } from './components/GuideAndFaqModal';
+import { FirstTimeGuideBanner } from './components/FirstTimeGuideBanner';
 import { BedDouble, Sparkles, Package } from 'lucide-react';
 
 const STORAGE_KEY_RESULT = 'roomtetris_result_v1';
@@ -81,7 +82,7 @@ export function App() {
       }
     } else {
       await navigator.clipboard.writeText(window.location.origin);
-      alert('🎉 룸테트리스 링크가 복사되었습니다!\n친구에게 공유해보세요.');
+      alert('룸테트리스 링크가 복사되었습니다.\n친구에게 공유해보세요.');
     }
   };
 
@@ -156,6 +157,13 @@ export function App() {
       {/* 메인 본문 컨테이너 */}
       <main className="flex-1 max-w-xl w-full mx-auto px-4 pt-3.5">
         
+        {/* 초보자 3분 퀵가이드 배너 (입력 화면일 때 상단 노출) */}
+        {!currentResult && !declutterResult && (
+          <FirstTimeGuideBanner
+            onOpenGuideModal={() => setIsInfoModalOpen(true)}
+          />
+        )}
+
         {/* 모드 선택 세그먼트 (결과 화면이 아닐 때 상단 노출) */}
         {!currentResult && !declutterResult && (
           <div className="grid grid-cols-2 p-1 bg-slate-200/80 rounded-2xl mb-3.5 border border-slate-300/60 shadow-xs">
@@ -168,7 +176,7 @@ export function App() {
               }`}
             >
               <BedDouble className="w-4 h-4 text-blue-600" />
-              <span>방꾸미기 & 가구배치</span>
+              <span>방꾸미기 &amp; 가구배치</span>
             </button>
 
             <button
@@ -180,7 +188,7 @@ export function App() {
               }`}
             >
               <Package className="w-4 h-4 text-amber-600" />
-              <span>짐정리 & 공간 비우기</span>
+              <span>짐정리 &amp; 공간 비우기</span>
             </button>
           </div>
         )}
@@ -218,7 +226,7 @@ export function App() {
             <DeclutterInputView
               onAnalyze={handleAnalyzeDeclutter}
               isLoading={isLoading}
-              quotaLabel="🎁 100% 무료"
+              quotaLabel="100% 무료"
             />
           )
         )}
@@ -232,18 +240,18 @@ export function App() {
             onClick={() => setIsInfoModalOpen(true)} 
             className="hover:text-slate-900 underline cursor-pointer"
           >
-            서비스 소개
+            서비스 소개 &amp; 가이드 FAQ
           </button>
           <span>•</span>
           <span>문의: lanvall2@gmail.com</span>
         </div>
         <p className="text-[10px] sm:text-[11px] text-slate-400">
-          룸테트리스 (RoomTetris) | 토스 사용자를 위한 100% 무료 자취방 가구배치 & 방꾸미기
+          룸테트리스 (RoomTetris) | 토스 사용자를 위한 100% 무료 자취방 가구배치 &amp; 방꾸미기
         </p>
       </footer>
 
-      {/* 가이드 안내 모달 */}
-      <InfoModal
+      {/* 가이드 & FAQ 모달 */}
+      <GuideAndFaqModal
         isOpen={isInfoModalOpen}
         onClose={() => setIsInfoModalOpen(false)}
       />

@@ -156,7 +156,7 @@ export const PRESET_ANALYSIS_DATABASE: Record<string, RoomAnalysisResult> = {
             xMm: 50,
             yMm: 1800,
             rotation: 0,
-            label: '행거 (600x450)',
+            label: '슬림 행거',
             color: '#8B5CF6',
             recommendedSpec: '폭 600mm 슬림형',
             searchKeyword: '슬림 드레스룸 행거'

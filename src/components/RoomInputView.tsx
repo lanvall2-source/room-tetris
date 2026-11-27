@@ -3,7 +3,8 @@ import { RoomPresetId, DecorThemeId } from '../types';
 import { ROOM_PRESETS } from '../data/presets';
 import { 
   Camera, Upload, Sparkles, Maximize2, 
-  ArrowRight, ShieldCheck, Zap, Palette, Home, CheckCircle2 
+  ArrowRight, ShieldCheck, Zap, Palette, Home, CheckCircle2,
+  Trees, Sliders, Heart, Building2, LayoutGrid
 } from 'lucide-react';
 import { compressImage } from '../utils/imageCompressor';
 
@@ -18,11 +19,26 @@ interface RoomInputViewProps {
   isLoading: boolean;
 }
 
-const DECOR_THEMES: { id: DecorThemeId; name: string; icon: string; desc: string; badge: string }[] = [
-  { id: 'wood', name: '내추럴 우드', icon: '🌿', desc: '따뜻한 원목 & 화이트 감성', badge: 'bg-amber-50 text-amber-800 border-amber-200' },
-  { id: 'modern', name: '모던 미드센추리', icon: '🏙️', desc: '세련된 스틸 & 포인트 컬러', badge: 'bg-slate-100 text-slate-800 border-slate-300' },
-  { id: 'cozy', name: '포근한 코지', icon: '🧸', desc: '패브릭 & 부드러운 웜톤', badge: 'bg-rose-50 text-rose-800 border-rose-200' },
+const DECOR_THEMES = [
+  { id: 'wood' as DecorThemeId, name: '내추럴 우드', icon: Trees, desc: '따뜻한 원목 & 화이트 감성', badge: 'bg-amber-50 text-amber-800 border-amber-200' },
+  { id: 'modern' as DecorThemeId, name: '모던 미드센추리', icon: Sliders, desc: '세련된 스틸 & 포인트 컬러', badge: 'bg-slate-100 text-slate-800 border-slate-300' },
+  { id: 'cozy' as DecorThemeId, name: '포근한 코지', icon: Heart, desc: '패브릭 & 부드러운 웜톤', badge: 'bg-rose-50 text-rose-800 border-rose-200' },
 ];
+
+const renderPresetIcon = (iconName: string) => {
+  switch (iconName) {
+    case 'Maximize2':
+      return <Maximize2 className="w-4 h-4 text-blue-600" />;
+    case 'Building':
+      return <Building2 className="w-4 h-4 text-indigo-600" />;
+    case 'Columns':
+      return <LayoutGrid className="w-4 h-4 text-teal-600" />;
+    case 'Home':
+      return <Home className="w-4 h-4 text-amber-600" />;
+    default:
+      return <Home className="w-4 h-4 text-blue-600" />;
+  }
+};
 
 export const RoomInputView: React.FC<RoomInputViewProps> = ({
   onAnalyze,
@@ -119,18 +135,29 @@ export const RoomInputView: React.FC<RoomInputViewProps> = ({
           <div className="grid grid-cols-3 gap-2">
             {DECOR_THEMES.map((theme) => {
               const isSelected = selectedTheme === theme.id;
+              const IconComp = theme.icon;
               return (
                 <button
                   key={theme.id}
                   type="button"
                   onClick={() => setSelectedTheme(theme.id)}
-                  className={`p-2.5 rounded-2xl border text-center transition-all cursor-pointer flex flex-col items-center justify-between ${
+                  className={`p-3 rounded-2xl border text-center transition-all cursor-pointer flex flex-col items-center justify-between ${
                     isSelected
                       ? 'border-blue-600 bg-blue-50/60 ring-2 ring-blue-500/20 shadow-xs'
                       : 'border-slate-200 bg-slate-50/50 hover:bg-slate-50 text-slate-600'
                   }`}
                 >
-                  <span className="text-2xl mb-1">{theme.icon}</span>
+                  <div
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center mb-1.5 shadow-2xs ${
+                      theme.id === 'wood'
+                        ? 'bg-amber-100 text-amber-800'
+                        : theme.id === 'modern'
+                        ? 'bg-slate-200 text-slate-800'
+                        : 'bg-rose-100 text-rose-800'
+                    }`}
+                  >
+                    <IconComp className="w-4 h-4" />
+                  </div>
                   <strong className="text-xs font-extrabold text-slate-900 block">
                     {theme.name}
                   </strong>
@@ -169,7 +196,9 @@ export const RoomInputView: React.FC<RoomInputViewProps> = ({
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="text-2xl">{preset.icon}</span>
+                    <div className="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200/80 flex items-center justify-center shrink-0 shadow-2xs">
+                      {renderPresetIcon(preset.icon)}
+                    </div>
                     <div>
                       <div className="flex items-center gap-1.5">
                         <strong className="text-xs font-extrabold text-slate-900">

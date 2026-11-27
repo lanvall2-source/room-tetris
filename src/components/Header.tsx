@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ruler, Info, Share2, Sparkles } from 'lucide-react';
+import { Ruler, HelpCircle, Share2, Sparkles } from 'lucide-react';
 
 interface HeaderProps {
   onOpenInfoModal: () => void;
@@ -29,13 +29,24 @@ export const Header: React.FC<HeaderProps> = ({
               </h1>
             </div>
             <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium">
-              자취방 가구배치 & 인테리어 시뮬레이터
+              자취방 가구배치 &amp; 인테리어 시뮬레이터
             </p>
           </div>
         </div>
 
         {/* 우측 버튼들 (토스 환경 최적화: 깔끔한 공유 & 가이드 안내) */}
         <div className="flex items-center gap-1.5">
+          {/* 가이드 & FAQ 안내 */}
+          <button
+            onClick={onOpenInfoModal}
+            aria-label="가이드 & FAQ 안내"
+            className="flex items-center gap-1 text-xs bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 transition-all cursor-pointer shadow-2xs"
+            title="이용 가이드 & FAQ"
+          >
+            <HelpCircle className="w-3.5 h-3.5 text-blue-600" />
+            <span className="hidden sm:inline">가이드·FAQ</span>
+          </button>
+
           {/* 친구 공유 버튼 */}
           <button
             onClick={onShare}
@@ -44,16 +55,6 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Share2 className="w-3.5 h-3.5 text-blue-600" />
             <span>공유</span>
-          </button>
-
-          {/* 가이드 안내 */}
-          <button
-            onClick={onOpenInfoModal}
-            aria-label="가이드 안내"
-            className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
-            title="이용 가이드"
-          >
-            <Info className="w-4 h-4" />
           </button>
         </div>
 

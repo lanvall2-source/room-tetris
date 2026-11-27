@@ -57,7 +57,7 @@ export function PaymentModal({ isOpen, onClose, onSuccess }: PaymentModalProps) 
     addPaidCredits(creditToAdd);
     setIsProcessing(false);
 
-    alert(`🎉 결제가 완료되었습니다! (${creditToAdd}회 분석권 충전)\n지금 바로 내 방 분석을 시작합니다.`);
+    alert(`결제가 완료되었습니다. (${creditToAdd}회 분석권 충전)\n지금 바로 내 방 분석을 시작합니다.`);
     onSuccess();
     onClose();
   };

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { DeclutterAnalysisResult } from '../types';
 import { 
   RotateCcw, Copy, Share2, Check, ArrowRight, AlertTriangle, 
-  Trash2, RefreshCw, ShoppingCart, ExternalLink, Sparkles, CheckCircle2, Info 
+  Trash2, RefreshCw, ShoppingCart, ExternalLink, Sparkles, CheckCircle2, Info,
+  Search, Lightbulb, Package 
 } from 'lucide-react';
 import { getCoupangSearchUrl, AFFILIATE_CONFIG } from '../utils/affiliate';
 
@@ -19,19 +20,19 @@ export const DeclutterReportView: React.FC<DeclutterReportViewProps> = ({
 
   const handleCopyMarkdown = () => {
     const text = `
-## 🔍 현재 방 상태 진단 (데드스페이스 팩트폭격)
+## [현재 방 상태 진단]
 * **동선 차단 구역:** ${result.diagnosis.blockedCorridor}
 * **죽어있는 공간:** ${result.diagnosis.deadSpace}
 
-## 🧹 1단계: 바닥 짐 제거 & 수납 매립 솔루션
+## [1단계: 바닥 짐 제거 & 수납 매립 솔루션]
 * **바닥 짐 올리기:** ${result.step1_storage.floorClearAction}
 * **데드스페이스 활용:** ${result.step1_storage.deadSpaceAction}
 
-## 🔄 2단계: 기존 가구 재배치 (비포 ➔ 애프터)
+## [2단계: 기존 가구 재배치 (비포 ➔ 애프터)]
 ${result.step2_rearrange.moves.map(m => `* **${m.furnitureName}:** [${m.from}] ➔ [${m.to}] (${m.reason})`).join('\n')}
 * **체감 효과:** ${result.step2_rearrange.gainedSpaceDescription}
 
-## 🛒 3단계: 공간 살리는 만원대 틈새 생존템 (수치 팩트체크)
+## [3단계: 공간 살리는 만원대 틈새 생존템 (수치 팩트체크)]
 ${result.step3_budgetItems.map(b => `* **${b.name} (${b.priceRange}):** ${b.specGuide} - ${b.purpose}`).join('\n')}
     `.trim();
 
@@ -98,7 +99,7 @@ ${result.step3_budgetItems.map(b => `* **${b.name} (${b.priceRange}):** ${b.spec
         </div>
       )}
 
-      {/* 섹션 1: 🔍 현재 방 상태 진단 (팩트폭격) */}
+      {/* 섹션 1: 현재 방 상태 진단 (데드스페이스 팩트체크) */}
       <div className="rounded-2xl bg-white p-5 border border-slate-200/90 shadow-xs space-y-3">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5">
           <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center font-bold">
@@ -106,7 +107,7 @@ ${result.step3_budgetItems.map(b => `* **${b.name} (${b.priceRange}):** ${b.spec
           </div>
           <div>
             <h2 className="text-sm sm:text-base font-extrabold text-slate-900">
-              🔍 현재 방 상태 진단 (데드스페이스 팩트체크)
+              현재 방 상태 진단 (데드스페이스 팩트체크)
             </h2>
             <p className="text-[11px] text-slate-500">
               방이 좁아지는 근본적인 원인을 정확히 짚어냅니다.
@@ -126,7 +127,7 @@ ${result.step3_budgetItems.map(b => `* **${b.name} (${b.priceRange}):** ${b.spec
         </div>
       </div>
 
-      {/* 섹션 2: 🧹 1단계: 바닥 짐 제거 & 수납 매립 솔루션 */}
+      {/* 섹션 2: 1단계: 바닥 짐 제거 & 수납 매립 솔루션 */}
       <div className="rounded-2xl bg-white p-5 border border-slate-200/90 shadow-xs space-y-3">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5">
           <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
@@ -134,7 +135,7 @@ ${result.step3_budgetItems.map(b => `* **${b.name} (${b.priceRange}):** ${b.spec
           </div>
           <div>
             <h2 className="text-sm sm:text-base font-extrabold text-slate-900">
-              🧹 1단계: 바닥 짐 제거 & 수납 매립 솔루션
+              1단계: 바닥 짐 제거 &amp; 수납 매립 솔루션
             </h2>
             <p className="text-[11px] text-slate-500">
               가구를 옮기기 전, 바닥 면적부터 복원하는 단계입니다.
@@ -154,7 +155,7 @@ ${result.step3_budgetItems.map(b => `* **${b.name} (${b.priceRange}):** ${b.spec
         </div>
       </div>
 
-      {/* 섹션 3: 🔄 2단계: 기존 가구 재배치 (비포 ➔ 애프터) */}
+      {/* 섹션 3: 2단계: 기존 가구 재배치 (비포 ➔ 애프터) */}
       <div className="rounded-2xl bg-white p-5 border border-slate-200/90 shadow-xs space-y-3.5">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5">
           <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
@@ -162,7 +163,7 @@ ${result.step3_budgetItems.map(b => `* **${b.name} (${b.priceRange}):** ${b.spec
           </div>
           <div>
             <h2 className="text-sm sm:text-base font-extrabold text-slate-900">
-              🔄 2단계: 기존 가구 재배치 (비포 ➔ 애프터)
+              2단계: 기존 가구 재배치 (비포 ➔ 애프터)
             </h2>
             <p className="text-[11px] text-slate-500">
               새로 사지 않고 위치만 바꿔서 공간을 넓힙니다.
@@ -193,20 +194,22 @@ ${result.step3_budgetItems.map(b => `* **${b.name} (${b.priceRange}):** ${b.spec
                 <span className="font-bold text-emerald-800 text-[11px] sm:text-xs">{move.to}</span>
               </div>
 
-              <p className="text-slate-500 text-[11px] leading-relaxed pt-0.5">
-                💡 <strong>이유:</strong> {move.reason}
+              <p className="text-slate-500 text-[11px] leading-relaxed pt-0.5 flex items-center gap-1">
+                <Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0 inline" />
+                <span><strong>이유:</strong> {move.reason}</span>
               </p>
             </div>
           ))}
         </div>
 
         {/* 체감 공간 확장 효과 배너 */}
-        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 leading-relaxed font-medium">
-          ✨ <strong>체감 효과:</strong> {result.step2_rearrange.gainedSpaceDescription}
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 leading-relaxed font-medium flex items-center gap-1.5">
+          <Sparkles className="w-4 h-4 text-emerald-600 shrink-0 inline" />
+          <span><strong>체감 효과:</strong> {result.step2_rearrange.gainedSpaceDescription}</span>
         </div>
       </div>
 
-      {/* 섹션 4: 🛒 3단계: 공간 살리는 만원대 틈새 생존템 (수치 팩트체크) */}
+      {/* 섹션 4: 3단계: 공간 살리는 만원대 틈새 생존템 (수치 팩트체크) */}
       <div className="rounded-2xl bg-white p-5 border border-slate-200/90 shadow-xs space-y-3.5">
         <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
           <div className="flex items-center gap-2">
@@ -215,7 +218,7 @@ ${result.step3_budgetItems.map(b => `* **${b.name} (${b.priceRange}):** ${b.spec
             </div>
             <div>
               <h2 className="text-sm sm:text-base font-extrabold text-slate-900">
-                🛒 3단계: 공간 살리는 틈새 생존템 (수치 팩트체크)
+                3단계: 공간 살리는 틈새 생존템 (수치 팩트체크)
               </h2>
               <p className="text-[11px] text-slate-500">
                 가구 새로 살 필요 없이 만원대로 수납력을 2배 늘리는 아이템
